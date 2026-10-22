@@ -1,0 +1,105 @@
+classDiagram
+    direction TB
+
+    class Sentence {
+        <<abstract>>
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+        +validate(sentence)$ void
+        +parenthesize(s)$ str
+    }
+
+    class Symbol {
+        +name : str
+        +__init__(name)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class Not {
+        +operand : Sentence
+        +__init__(operand)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class And {
+        +conjuncts : list~Sentence~
+        +__init__(*conjuncts)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +add(conjunct) void
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class Or {
+        +disjuncts : list~Sentence~
+        +__init__(*disjuncts)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class Implication {
+        +antecedent : Sentence
+        +consequent : Sentence
+        +__init__(antecedent, consequent)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class Biconditional {
+        +left : Sentence
+        +right : Sentence
+        +__init__(left, right)
+        +__eq__(other) bool
+        +__hash__() int
+        +__repr__() str
+        +evaluate(model) bool
+        +formula() str
+        +symbols() set
+    }
+
+    class logic {
+        <<module>>
+        +model_check(knowledge, query) bool
+    }
+
+    %% Dziedziczenie
+    Sentence <|-- Symbol
+    Sentence <|-- Not
+    Sentence <|-- And
+    Sentence <|-- Or
+    Sentence <|-- Implication
+    Sentence <|-- Biconditional
+
+    %% Kompozycja / agregacja (wzorzec Composite)
+    Not o-- "1" Sentence : operand
+    And o-- "0..*" Sentence : conjuncts
+    Or o-- "0..*" Sentence : disjuncts
+    Implication o-- "1" Sentence : antecedent
+    Implication o-- "1" Sentence : consequent
+    Biconditional o-- "1" Sentence : left
+    Biconditional o-- "1" Sentence : right
+
+    %% Zależność funkcji model_check
+    logic ..> Sentence : uses
